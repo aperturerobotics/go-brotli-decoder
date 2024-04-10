@@ -81,13 +81,6 @@ context ids and the type of the next byte is summarized in the table below:
 |-------------|-------------------|---------------------|------------------|
 */
 
-const (
-	contextLSB6   = 0
-	contextMSB6   = 1
-	contextUTF8   = 2
-	contextSigned = 3
-)
-
 /* Common context lookup table for all context modes. */
 var kContextLookup = [2048]byte{
 	/* CONTEXT_LSB6, last byte. */

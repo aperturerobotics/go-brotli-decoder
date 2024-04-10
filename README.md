@@ -1,14 +1,30 @@
+# Brotli Decoder for Go
+
+[![Go Reference](https://pkg.go.dev/badge/github.com/aperturerobotics/go-brotli-decoder.svg)](https://pkg.go.dev/github.com/aperturerobotics/go-brotli-decoder)
+[![Go Report Card Widget]][Go Report Card]
+
+[Go Report Card Widget]: https://goreportcard.com/badge/github.com/aperturerobotics/go-brotli-decoder
+[Go Report Card]: https://goreportcard.com/report/github.com/aperturerobotics/go-brotli-decoder
+
+## Introduction
+
+This package is a brotli decompressor implemented in pure Go.
+
 This package is a brotli compressor and decompressor implemented in Go.
+
 It was translated from the reference implementation (https://github.com/google/brotli)
-with the `c2go` tool at https://github.com/andybalholm/c2go.
+with the `c2go** tool at https://github.com/andybalholm/c2go.
 
-I have been working on new compression algorithms (not translated from C)
-in the matchfinder package.
-You can use them with the NewWriterV2 function.
-Currently they give better results than the old implementation
-(at least for compressing my test file, Newton’s *Opticks*) 
-on levels 2 to 6.
+## Upstream
 
-I am using it in production with https://github.com/andybalholm/redwood.
+This package is a fork of the [upstream project] to create a more minimal
+package with just the decoder and not the encoder.
 
-API documentation is found at https://pkg.go.dev/github.com/andybalholm/brotli?tab=doc.
+This is a significantly lighter package in terms of binary size.
+
+It was created by deleting the writer types and then repeatedly removing all
+unused symbols (detected with the gounused linter).
+
+If you need the brotli compressor, see the [upstream project].
+
+[upstream project]: https://github.com/andybalholm/brotli

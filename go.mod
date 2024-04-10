@@ -1,5 +1,3 @@
-module github.com/andybalholm/brotli
+module github.com/aperturerobotics/go-brotli-decoder
 
-go 1.13
-
-retract v1.0.1 // occasional panics and data corruption
+go 1.22
