@@ -31,6 +31,10 @@ $(GOLANGCI_LINT):
 		-o ./bin/golangci-lint \
 		github.com/golangci/golangci-lint/cmd/golangci-lint
 
+.PHONY: build
+build: vendor
+	go build -v
+
 .PHONY: lint
 lint: $(GOLANGCI_LINT)
 	$(GOLANGCI_LINT) run --timeout=10m
