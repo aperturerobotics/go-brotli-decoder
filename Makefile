@@ -29,7 +29,7 @@ $(GOLANGCI_LINT):
 	cd ./hack; \
 	go build -v \
 		-o ./bin/golangci-lint \
-		github.com/golangci/golangci-lint/cmd/golangci-lint
+		github.com/golangci/golangci-lint/v2/cmd/golangci-lint
 
 .PHONY: build
 build: vendor
