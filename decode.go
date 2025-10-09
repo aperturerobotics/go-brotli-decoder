@@ -241,17 +241,17 @@ func decodeMetaBlockLength(s *Reader, br *bitReader) int {
 		case stateMetablockHeaderSize:
 			i = s.loop_counter
 
-			for ; i < int(s.size_nibbles); i++ {
+			for ; i < int(s.size_nibbles); i++ { //nolint:gosec
 				if !safeReadBits(br, 4, &bits) {
 					s.loop_counter = i
 					return decoderNeedsMoreInput
 				}
 
-				if uint(i+1) == s.size_nibbles && s.size_nibbles > 4 && bits == 0 {
+				if uint(i+1) == s.size_nibbles && s.size_nibbles > 4 && bits == 0 { //nolint:gosec
 					return decoderErrorFormatExuberantNibble
 				}
 
-				s.meta_block_remaining_len |= int(bits << uint(i*4))
+				s.meta_block_remaining_len |= int(bits << uint(i*4)) //nolint:gosec
 			}
 
 			s.substate_metablock_header = stateMetablockHeaderUncompressed
@@ -306,17 +306,17 @@ func decodeMetaBlockLength(s *Reader, br *bitReader) int {
 		case stateMetablockHeaderMetadata:
 			i = s.loop_counter
 
-			for ; i < int(s.size_nibbles); i++ {
+			for ; i < int(s.size_nibbles); i++ { //nolint:gosec
 				if !safeReadBits(br, 8, &bits) {
 					s.loop_counter = i
 					return decoderNeedsMoreInput
 				}
 
-				if uint(i+1) == s.size_nibbles && s.size_nibbles > 1 && bits == 0 {
+				if uint(i+1) == s.size_nibbles && s.size_nibbles > 1 && bits == 0 { //nolint:gosec
 					return decoderErrorFormatExuberantMetaNibble
 				}
 
-				s.meta_block_remaining_len |= int(bits << uint(i*8))
+				s.meta_block_remaining_len |= int(bits << uint(i*8)) //nolint:gosec
 			}
 
 			s.meta_block_remaining_len++
@@ -374,7 +374,7 @@ func safeDecodeSymbol(table []huffmanCode, br *bitReader, result *uint32) bool {
 		return false /* No valid bits at all. */
 	}
 
-	val = uint32(getBitsUnmasked(br))
+	val = uint32(getBitsUnmasked(br)) //nolint:gosec
 	table = table[val&huffmanTableMask:]
 	if table[0].bits <= huffmanTableBits {
 		if uint32(table[0].bits) <= available_bits {
@@ -484,7 +484,7 @@ func readSimpleHuffmanSymbols(alphabet_size uint32, max_symbol uint32, s *Reader
 			return decoderErrorFormatSimpleHuffmanAlphabet
 		}
 
-		s.symbols_lists_array[i] = uint16(v)
+		s.symbols_lists_array[i] = uint16(v) //nolint:gosec
 		i++
 	}
 
@@ -512,7 +512,7 @@ Process single decoded symbol code length:
 func processSingleCodeLength(code_len uint32, symbol *uint32, repeat *uint32, space *uint32, prev_code_len *uint32, symbol_lists symbolList, code_length_histo []uint16, next_symbol []int) {
 	*repeat = 0
 	if code_len != 0 { /* code_len == 1..15 */
-		symbolListPut(symbol_lists, next_symbol[code_len], uint16(*symbol))
+		symbolListPut(symbol_lists, next_symbol[code_len], uint16(*symbol)) //nolint:gosec
 		next_symbol[code_len] = int(*symbol)
 		*prev_code_len = code_len
 		*space -= 32768 >> code_len
@@ -567,17 +567,17 @@ func processRepeatedCodeLength(code_len uint32, repeat_delta uint32, alphabet_si
 		var last uint = uint(*symbol + repeat_delta)
 		var next int = next_symbol[*repeat_code_len]
 		for {
-			symbolListPut(symbol_lists, next, uint16(*symbol))
+			symbolListPut(symbol_lists, next, uint16(*symbol)) //nolint:gosec
 			next = int(*symbol)
 			(*symbol)++
-			if (*symbol) == uint32(last) {
+			if (*symbol) == uint32(last) { //nolint:gosec
 				break
 			}
 		}
 
 		next_symbol[*repeat_code_len] = next
 		*space -= repeat_delta << (15 - *repeat_code_len)
-		code_length_histo[*repeat_code_len] = uint16(uint32(code_length_histo[*repeat_code_len]) + repeat_delta)
+		code_length_histo[*repeat_code_len] = uint16(uint32(code_length_histo[*repeat_code_len]) + repeat_delta) //nolint:gosec
 	} else {
 		*symbol += repeat_delta
 	}
@@ -623,7 +623,7 @@ func readSymbolCodeLengths(alphabet_size uint32, s *Reader) int {
 			} else {
 				extra_bits = 3
 			}
-			var repeat_delta uint32 = uint32(getBitsUnmasked(br)) & bitMask(extra_bits)
+			var repeat_delta uint32 = uint32(getBitsUnmasked(br)) & bitMask(extra_bits) //nolint:gosec
 			dropBits(br, extra_bits)
 			processRepeatedCodeLength(code_len, repeat_delta, alphabet_size, &symbol, &repeat, &space, &prev_code_len, &repeat_code_len, symbol_lists, code_length_histo, next_symbol)
 		}
@@ -648,7 +648,7 @@ func safeReadSymbolCodeLengths(alphabet_size uint32, s *Reader) int {
 		get_byte = false
 		available_bits = getAvailableBits(br)
 		if available_bits != 0 {
-			bits = uint32(getBitsUnmasked(br))
+			bits = uint32(getBitsUnmasked(br)) //nolint:gosec
 		}
 
 		p = p[bits&bitMask(huffmanMaxCodeLengthCodeLength):]
@@ -694,7 +694,7 @@ func readCodeLengthCodeLengths(s *Reader) int {
 		if !safeGetBits(br, 4, &ix) {
 			var available_bits uint32 = getAvailableBits(br)
 			if available_bits != 0 {
-				ix = uint32(getBitsUnmasked(br) & 0xF)
+				ix = uint32(getBitsUnmasked(br) & 0xF) //nolint:gosec
 			} else {
 				ix = 0
 			}
@@ -938,7 +938,7 @@ func inverseMoveToFrontTransform(v []byte, v_len uint32, state *Reader) {
 	var mtf_1 byte
 
 	/* Transform the input. */
-	for i = 0; uint32(i) < v_len; i++ {
+	for i = 0; uint32(i) < v_len; i++ { //nolint:gosec
 		var index int = int(v[i])
 		var value byte = mtf[index]
 		v[i] = value
@@ -1181,7 +1181,7 @@ func detectTrivialLiteralBlockTypes(s *Reader) {
 	for i = 0; i < 8; i++ {
 		s.trivial_literal_contexts[i] = 0
 	}
-	for i = 0; uint32(i) < s.num_block_types[0]; i++ {
+	for i = 0; uint32(i) < s.num_block_types[0]; i++ { //nolint:gosec
 		var offset uint = i << literalContextBits
 		var error uint = 0
 		var sample uint = uint(s.context_map[offset])
@@ -1207,7 +1207,7 @@ func prepareLiteralDecoding(s *Reader) {
 	var context_offset uint32 = block_type << literalContextBits
 	s.context_map_slice = s.context_map[context_offset:]
 	trivial = uint(s.trivial_literal_contexts[block_type>>5])
-	s.trivial_literal_context = int((trivial >> (block_type & 31)) & 1)
+	s.trivial_literal_context = int((trivial >> (block_type & 31)) & 1) //nolint:gosec
 	s.literal_htree = []huffmanCode(s.literal_hgroup.htrees[s.context_map_slice[0]])
 	context_mode = s.context_modes[block_type] & 3
 	s.context_lookup = getContextLUT(int(context_mode))
@@ -1283,11 +1283,11 @@ func safeDecodeDistanceBlockSwitch(s *Reader) bool {
 func unwrittenBytes(s *Reader, wrap bool) uint {
 	var pos uint
 	if wrap && s.pos > s.ringbuffer_size {
-		pos = uint(s.ringbuffer_size)
+		pos = uint(s.ringbuffer_size) //nolint:gosec
 	} else {
-		pos = uint(s.pos)
+		pos = uint(s.pos) //nolint:gosec
 	}
-	var partial_pos_rb uint = (s.rb_roundtrips * uint(s.ringbuffer_size)) + pos
+	var partial_pos_rb uint = (s.rb_roundtrips * uint(s.ringbuffer_size)) + pos //nolint:gosec
 	return partial_pos_rb - s.partial_pos_out
 }
 
@@ -1298,7 +1298,7 @@ Dumps output.
 	and either ring-buffer is as big as window size, or |force| is true.
 */
 func writeRingBuffer(s *Reader, available_out *uint, next_out *[]byte, total_out *uint, force bool) int {
-	start := s.ringbuffer[s.partial_pos_out&uint(s.ringbuffer_mask):]
+	start := s.ringbuffer[s.partial_pos_out&uint(s.ringbuffer_mask):] //nolint:gosec
 	var to_write uint = unwrittenBytes(s, true)
 	var num_written uint = *available_out
 	if num_written > to_write {
@@ -1336,7 +1336,7 @@ func writeRingBuffer(s *Reader, available_out *uint, next_out *[]byte, total_out
 	if s.ringbuffer_size == 1<<s.window_bits && s.pos >= s.ringbuffer_size {
 		s.pos -= s.ringbuffer_size
 		s.rb_roundtrips++
-		if uint(s.pos) != 0 {
+		if uint(s.pos) != 0 { //nolint:gosec
 			s.should_wrap_ringbuffer = 1
 		} else {
 			s.should_wrap_ringbuffer = 0
@@ -1348,7 +1348,7 @@ func writeRingBuffer(s *Reader, available_out *uint, next_out *[]byte, total_out
 
 func wrapRingBuffer(s *Reader) {
 	if s.should_wrap_ringbuffer != 0 {
-		copy(s.ringbuffer, s.ringbuffer_end[:uint(s.pos)])
+		copy(s.ringbuffer, s.ringbuffer_end[:uint(s.pos)]) //nolint:gosec
 		s.should_wrap_ringbuffer = 0
 	}
 }
@@ -1377,7 +1377,7 @@ func ensureRingBuffer(s *Reader) bool {
 	s.ringbuffer[s.new_ringbuffer_size-1] = 0
 
 	if old_ringbuffer != nil {
-		copy(s.ringbuffer, old_ringbuffer[:uint(s.pos)])
+		copy(s.ringbuffer, old_ringbuffer[:uint(s.pos)]) //nolint:gosec
 	}
 
 	s.ringbuffer_size = s.new_ringbuffer_size
@@ -1398,7 +1398,7 @@ func copyUncompressedBlockToOutput(available_out *uint, next_out *[]byte, total_
 		switch s.substate_uncompressed {
 		case stateUncompressedNone:
 			{
-				var nbytes int = int(getRemainingBytes(&s.br))
+				var nbytes int = int(getRemainingBytes(&s.br)) //nolint:gosec
 				if nbytes > s.meta_block_remaining_len {
 					nbytes = s.meta_block_remaining_len
 				}
@@ -1408,7 +1408,7 @@ func copyUncompressedBlockToOutput(available_out *uint, next_out *[]byte, total_
 				}
 
 				/* Copy remaining bytes from s->br.buf_ to ring-buffer. */
-				copyBytes(s.ringbuffer[s.pos:], &s.br, uint(nbytes))
+				copyBytes(s.ringbuffer[s.pos:], &s.br, uint(nbytes)) //nolint:gosec
 
 				s.pos += nbytes
 				s.meta_block_remaining_len -= nbytes
@@ -1526,7 +1526,7 @@ func takeDistanceFromRingBuffer(s *Reader) {
 		var distance_code int = s.distance_code << 1
 		const kDistanceShortCodeIndexOffset uint32 = 0xAAAFFF1B
 		const kDistanceShortCodeValueOffset uint32 = 0xFA5FA500
-		var v int = (s.dist_rb_idx + int(kDistanceShortCodeIndexOffset>>uint(distance_code))) & 0x3
+		var v int = (s.dist_rb_idx + int(kDistanceShortCodeIndexOffset>>uint(distance_code))) & 0x3 //nolint:gosec
 		/* kDistanceShortCodeIndexOffset has 2-bit values from LSB:
 		   3, 2, 1, 0, 3, 3, 3, 3, 3, 3, 2, 2, 2, 2, 2, 2 */
 
@@ -1534,7 +1534,7 @@ func takeDistanceFromRingBuffer(s *Reader) {
 		   -0, 0,-0, 0,-1, 1,-2, 2,-3, 3,-1, 1,-2, 2,-3, 3 */
 		s.distance_code = s.dist_rb[v]
 
-		v = int(kDistanceShortCodeValueOffset>>uint(distance_code)) & 0x3
+		v = int(kDistanceShortCodeValueOffset>>uint(distance_code)) & 0x3 //nolint:gosec
 		if distance_code&0x3 != 0 {
 			s.distance_code += v
 		} else {
@@ -1590,7 +1590,7 @@ func readDistanceInternal(safe int, s *Reader, br *bitReader) bool {
 		var postfix int
 		var offset int
 		if safe == 0 && (s.distance_postfix_bits == 0) {
-			nbits = (uint32(distval) >> 1) + 1
+			nbits = (uint32(distval) >> 1) + 1 //nolint:gosec
 			offset = ((2 + (distval & 1)) << nbits) - 4
 			s.distance_code = int(s.num_direct_distance_codes) + offset + int(readBits(br, nbits))
 		} else {
@@ -1598,7 +1598,7 @@ func readDistanceInternal(safe int, s *Reader, br *bitReader) bool {
 			var bits uint32
 			postfix = distval & s.distance_postfix_mask
 			distval >>= s.distance_postfix_bits
-			nbits = (uint32(distval) >> 1) + 1
+			nbits = (uint32(distval) >> 1) + 1 //nolint:gosec
 			if safe != 0 {
 				if !safeReadBitsMaybeZero(br, nbits, &bits) {
 					s.distance_code = -1 /* Restore precondition. */
@@ -1997,7 +1997,7 @@ CommandPostDecodeLiterals:
 		pos += i
 		if i > 16 {
 			if i > 32 {
-				copy(copy_dst[16:], copy_src[16:][:uint(i-16)])
+				copy(copy_dst[16:], copy_src[16:][:uint(i-16)]) //nolint:gosec
 			} else {
 				/* This branch covers about 45% cases.
 				   Fixed size short copy allows more compiler optimizations. */
@@ -2419,10 +2419,10 @@ func decoderDecompressStream(s *Reader, available_in *uint, next_in *[]byte, ava
 				var num_distance_codes uint32
 				var max_distance_symbol uint32
 				if s.large_window {
-					num_distance_codes = uint32(distanceAlphabetSize(uint(s.distance_postfix_bits), uint(num_direct_codes), largeMaxDistanceBits))
+					num_distance_codes = uint32(distanceAlphabetSize(uint(s.distance_postfix_bits), uint(num_direct_codes), largeMaxDistanceBits)) //nolint:gosec
 					max_distance_symbol = maxDistanceSymbol(num_direct_codes, s.distance_postfix_bits)
 				} else {
-					num_distance_codes = uint32(distanceAlphabetSize(uint(s.distance_postfix_bits), uint(num_direct_codes), maxDistanceBits))
+					num_distance_codes = uint32(distanceAlphabetSize(uint(s.distance_postfix_bits), uint(num_direct_codes), maxDistanceBits)) //nolint:gosec
 					max_distance_symbol = num_distance_codes
 				}
 				var allocation_success bool = true

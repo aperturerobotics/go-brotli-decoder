@@ -104,7 +104,7 @@ Returns amount of unread bytes the bit reader still has buffered from the
 	BrotliInput, including whole bytes in br->val_.
 */
 func getRemainingBytes(br *bitReader) uint {
-	return uint(uint32(br.input_len-br.byte_pos) + (getAvailableBits(br) >> 3))
+	return uint(uint32(br.input_len-br.byte_pos) + (getAvailableBits(br) >> 3)) //nolint:gosec
 }
 
 /*
@@ -174,7 +174,7 @@ Like BrotliGetBits, but does not mask the result.
 */
 func get16BitsUnmasked(br *bitReader) uint32 {
 	fillBitWindow(br, 16)
-	return uint32(getBitsUnmasked(br))
+	return uint32(getBitsUnmasked(br)) //nolint:gosec
 }
 
 /*
@@ -184,7 +184,8 @@ Returns the specified number of bits from |br| without advancing bit
 */
 func getBits(br *bitReader, n_bits uint32) uint32 {
 	fillBitWindow(br, n_bits)
-	return uint32(getBitsUnmasked(br)) & bitMask(n_bits)
+	bits := uint32(getBitsUnmasked(br)) //nolint:gosec
+	return bits & bitMask(n_bits)
 }
 
 /*
@@ -199,7 +200,7 @@ func safeGetBits(br *bitReader, n_bits uint32, val *uint32) bool {
 		}
 	}
 
-	*val = uint32(getBitsUnmasked(br)) & bitMask(n_bits)
+	*val = uint32(getBitsUnmasked(br)) & bitMask(n_bits) //nolint:gosec
 	return true
 }
 
@@ -227,7 +228,7 @@ Reads the specified number of bits from |br| and advances the bit pos.
 	Precondition: accumulator MUST contain at least |n_bits|.
 */
 func takeBits(br *bitReader, n_bits uint32, val *uint32) {
-	*val = uint32(getBitsUnmasked(br)) & bitMask(n_bits)
+	*val = uint32(getBitsUnmasked(br)) & bitMask(n_bits) //nolint:gosec
 	dropBits(br, n_bits)
 }
 

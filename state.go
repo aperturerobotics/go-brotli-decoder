@@ -285,9 +285,9 @@ func decoderStateCleanupAfterMetablock(s *Reader) {
 
 func decoderHuffmanTreeGroupInit(s *Reader, group *huffmanTreeGroup, alphabet_size uint32, max_symbol uint32, ntrees uint32) bool {
 	var max_table_size uint = uint(kMaxHuffmanTableSize[(alphabet_size+31)>>5])
-	group.alphabet_size = uint16(alphabet_size)
-	group.max_symbol = uint16(max_symbol)
-	group.num_htrees = uint16(ntrees)
+	group.alphabet_size = uint16(alphabet_size) //nolint:gosec
+	group.max_symbol = uint16(max_symbol)       //nolint:gosec
+	group.num_htrees = uint16(ntrees)           //nolint:gosec
 	group.htrees = make([][]huffmanCode, ntrees)
 	group.codes = make([]huffmanCode, (uint(ntrees) * max_table_size))
 	return !(group.codes == nil)

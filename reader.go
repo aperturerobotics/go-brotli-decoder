@@ -70,7 +70,7 @@ func (r *Reader) Read(p []byte) (n int, err error) {
 		out_remaining := out_len
 		result := decoderDecompressStream(r, &in_remaining, &r.in, &out_remaining, &p)
 		written = out_len - out_remaining
-		n = int(written)
+		n = int(written) //nolint:gosec
 
 		switch result {
 		case decoderResultSuccess:

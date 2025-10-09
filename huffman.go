@@ -395,7 +395,7 @@ Returns the table width of the next 2nd level table. |count| is the histogram
 	next processed symbol.
 */
 func nextTableBitSize(count []uint16, len int, root_bits int) int {
-	var left int = 1 << uint(len-root_bits)
+	var left int = 1 << uint(len-root_bits) //nolint:gosec
 	for len < huffmanMaxCodeLength {
 		left -= int(count[len])
 		if left <= 0 {
@@ -455,8 +455,8 @@ func buildCodeLengthsHuffmanTable(table []huffmanCode, code_lengths []byte, coun
 
 	/* Special case: all symbols but one have 0 code length. */
 	if offset[0] == 0 {
-		code = constructHuffmanCode(0, uint16(sorted[0]))
-		for key = 0; key < uint64(table_size); key++ {
+		code = constructHuffmanCode(0, uint16(sorted[0])) //nolint:gosec
+		for key = 0; key < uint64(table_size); key++ {    //nolint:gosec
 			table[key] = code
 		}
 
@@ -472,7 +472,7 @@ func buildCodeLengthsHuffmanTable(table []huffmanCode, code_lengths []byte, coun
 	step = 2
 	for {
 		for bits_count = int(count[bits]); bits_count != 0; bits_count-- {
-			code = constructHuffmanCode(byte(bits), uint16(sorted[symbol]))
+			code = constructHuffmanCode(byte(bits), uint16(sorted[symbol])) //nolint:gosec
 			symbol++
 			replicateValue(table[reverseBits8(key):], step, table_size, code)
 			key += key_step
@@ -514,14 +514,14 @@ func buildHuffmanTable(root_table []huffmanCode, root_bits int, symbol_lists sym
 
 	table = root_table
 	table_bits = root_bits
-	table_size = 1 << uint(table_bits)
+	table_size = 1 << uint(table_bits) //nolint:gosec
 	total_size = table_size
 
 	/* Fill in the root table. Reduce the table size to if possible,
 	   and create the repetitions by memcpy. */
 	if table_bits > max_length {
 		table_bits = max_length
-		table_size = 1 << uint(table_bits)
+		table_size = 1 << uint(table_bits) //nolint:gosec
 	}
 
 	key = 0
@@ -532,7 +532,7 @@ func buildHuffmanTable(root_table []huffmanCode, root_bits int, symbol_lists sym
 		symbol = bits - (huffmanMaxCodeLength + 1)
 		for bits_count = int(count[bits]); bits_count != 0; bits_count-- {
 			symbol = int(symbolListGet(symbol_lists, symbol))
-			code = constructHuffmanCode(byte(bits), uint16(symbol))
+			code = constructHuffmanCode(byte(bits), uint16(symbol)) //nolint:gosec
 			replicateValue(table[reverseBits8(key):], step, table_size, code)
 			key += key_step
 		}
@@ -547,12 +547,12 @@ func buildHuffmanTable(root_table []huffmanCode, root_bits int, symbol_lists sym
 
 	/* If root_bits != table_bits then replicate to fill the remaining slots. */
 	for total_size != table_size {
-		copy(table[table_size:], table[:uint(table_size)])
+		copy(table[table_size:], table[:uint(table_size)]) //nolint:gosec
 		table_size <<= 1
 	}
 
 	/* Fill in 2nd level tables and add pointers to root table. */
-	key_step = reverseBitsLowest >> uint(root_bits-1)
+	key_step = reverseBitsLowest >> uint(root_bits-1) //nolint:gosec
 
 	sub_key = reverseBitsLowest << 1
 	sub_key_step = reverseBitsLowest
@@ -564,16 +564,16 @@ func buildHuffmanTable(root_table []huffmanCode, root_bits int, symbol_lists sym
 			if sub_key == reverseBitsLowest<<1 {
 				table = table[table_size:]
 				table_bits = nextTableBitSize(count, int(len), root_bits)
-				table_size = 1 << uint(table_bits)
+				table_size = 1 << uint(table_bits) //nolint:gosec
 				total_size += table_size
 				sub_key = reverseBits8(key)
 				key += key_step
-				root_table[sub_key] = constructHuffmanCode(byte(table_bits+root_bits), uint16(uint64(uint(-cap(table)+cap(root_table)))-sub_key))
+				root_table[sub_key] = constructHuffmanCode(byte(table_bits+root_bits), uint16(uint64(uint(-cap(table)+cap(root_table)))-sub_key)) //nolint:gosec
 				sub_key = 0
 			}
 
 			symbol = int(symbolListGet(symbol_lists, symbol))
-			code = constructHuffmanCode(byte(len-root_bits), uint16(symbol))
+			code = constructHuffmanCode(byte(len-root_bits), uint16(symbol)) //nolint:gosec
 			replicateValue(table[reverseBits8(sub_key):], step, table_size, code)
 			sub_key += sub_key_step
 		}
@@ -582,12 +582,12 @@ func buildHuffmanTable(root_table []huffmanCode, root_bits int, symbol_lists sym
 		sub_key_step >>= 1
 	}
 
-	return uint32(total_size)
+	return uint32(total_size) //nolint:gosec
 }
 
 func buildSimpleHuffmanTable(table []huffmanCode, root_bits int, val []uint16, num_symbols uint32) uint32 {
 	var table_size uint32 = 1
-	var goal_size uint32 = 1 << uint(root_bits)
+	var goal_size uint32 = 1 << uint(root_bits) //nolint:gosec
 	switch num_symbols {
 	case 0:
 		table[0] = constructHuffmanCode(0, val[0])
