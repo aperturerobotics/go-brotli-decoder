@@ -8,13 +8,12 @@ package brotli
 import (
 	"bytes"
 	"io"
-	"io/ioutil"
 	"testing"
 )
 
 func Decode(encodedData []byte) ([]byte, error) {
 	r := NewReader(bytes.NewReader(encodedData))
-	return ioutil.ReadAll(r)
+	return io.ReadAll(r)
 }
 
 func TestDecodeInvalidInput(t *testing.T) {
