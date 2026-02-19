@@ -30,6 +30,6 @@ jobs:
         with:
           go-version: ${{ matrix.go }}
       - name: Test Go
-        run: make test
+        run: go test -v ./...
       - name: Lint Go
-        run: make lint
+        run: go run github.com/golangci/golangci-lint/v2/cmd/golangci-lint@latest run --timeout=10m

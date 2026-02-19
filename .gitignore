@@ -1,2 +1,8 @@
 cpu.out
 brotli.test
+vendor/
+debug.test*
+__debug*
+.aider*
+*.test
+/.tools/

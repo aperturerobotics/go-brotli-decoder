@@ -19,7 +19,7 @@ linters:
     - importas
     - misspell
     - revive
-    # - unconvert
+    # - unconvert # disabled: ported C code has many intentional type conversions
   disable:
     - errcheck
   settings:
@@ -37,6 +37,7 @@ linters:
               desc: Do not use
     gosec:
       excludes:
+        - G115 # Allow integer overflow conversions in brotli decoder.
         - G306 # Allow WriteFile permissions to be 0644.
     importas:
       # Do not allow unaliased imports of aliased packages.
@@ -46,16 +47,14 @@ linters:
         - name: package-comments
           disabled: true
     staticcheck:
-      # All SA checks are enabled by default, customize as needed.
-      # Refer to https://staticcheck.io/docs/checks for check details.
       checks:
         - all
-        - '-SA1012'
-        - '-ST1003'
-        - '-ST1023'
-        - '-QF1011'
-        - '-QF1003'
-        - '-QF1001'
+        - '-SA1012' # Allow passing nil contexts.
+        - '-ST1003' # Allow underscores in names (ported C code).
+        - '-ST1023' # Allow redundant type declarations.
+        - '-QF1011' # Allow explicit type in var declarations.
+        - '-QF1003' # Allow if/else over switch.
+        - '-QF1001' # Allow explicit type conversions.
 
   # Exclusions based on common patterns and presets.
   exclusions:
@@ -65,8 +64,8 @@ linters:
     presets:
       - comments
       - common-false-positives
-      - legacy # Excludes checks deprecated in new Go versions
-      - std-error-handling # Excludes some common stdlib error patterns
+      - legacy
+      - std-error-handling
     # Exclude specific paths using regex.
     paths:
       - third_party$
