@@ -7,12 +7,20 @@
     "workarounds:all"
   ],
   "branchConcurrentLimit": 0,
-  "packageRules": [{
-    "matchManagers": ["gomod"],
-    "matchDepTypes": ["replace"],
-    "enabled": false
-  }, {
-    "matchPackageNames": ["github.com/libp2p/go-libp2p"],
-    "allowedVersions": ["^v0.*"]
-  }]
+  "packageRules": [
+    {
+      "matchManagers": ["gomod"],
+      "matchDepTypes": ["replace"],
+      "enabled": false
+    },
+    {
+      "matchPackageNames": ["github.com/libp2p/go-libp2p"],
+      "allowedVersions": ["^v0.*"]
+    },
+    {
+      "matchManagers": ["gomod"],
+      "matchDepTypes": ["golang"],
+      "enabled": false
+    }
+  ]
 }
