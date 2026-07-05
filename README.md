@@ -1,10 +1,7 @@
 # Brotli Decoder for Go
 
 [![Go Reference](https://pkg.go.dev/badge/github.com/aperturerobotics/go-brotli-decoder.svg)](https://pkg.go.dev/github.com/aperturerobotics/go-brotli-decoder)
-[![Go Report Card Widget]][Go Report Card]
 
-[Go Report Card Widget]: https://goreportcard.com/badge/github.com/aperturerobotics/go-brotli-decoder
-[Go Report Card]: https://goreportcard.com/report/github.com/aperturerobotics/go-brotli-decoder
 
 ## Introduction
 
